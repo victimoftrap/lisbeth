@@ -1,0 +1,19 @@
+{
+  "name": "lisbeth",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "webpack --bail"
+  },
+  "author": "Alexander Golovanov",
+  "license": "N/A",
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "babel-loader": "^8.2.1",
+    "copy-webpack-plugin": "^6.3.1",
+    "webpack": "^5.4.0",
+    "webpack-cli": "^4.2.0",
+    "webpack-extension-reloader": "^1.1.4"
+  }
+}

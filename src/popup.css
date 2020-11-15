@@ -1,0 +1,16 @@
+.popup {
+    display: flex;
+    flex-direction: column;
+}
+
+.popup__title {
+    font-size: 36;
+    text-align: center;
+    color: rgb(64, 62, 196);
+}
+
+.record-button {
+    font-size: 18px;
+    border: 1px solid #000;
+    margin: 20px;
+}
