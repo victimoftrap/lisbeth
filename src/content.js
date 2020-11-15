@@ -2,25 +2,21 @@ import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
 
 const location = window.location;
 
-const startContestButtons = document.getElementsByClassName("button_theme_action");
-const endContestButtons = document.getElementsByClassName("button_role_end");
+const startContestButtons = document.getElementsByClassName("button_theme_action")[0];
+const endContestButtons = document.getElementsByClassName("button_role_end")[0];ы
+
+let port = chrome.runtime.connect({ name: 'lisbeth' });
 
 if (location.origin === "https://contest.yandex.ru") {
-    Array.from(startContestButtons).forEach(button => {
-        button.addEventListener("click", event => {
-            chrome.runtime.sendMessage(
-                { type: START_TRACKING },
-                response => {}
-            )
+    startContestButtons.addEventListener("click", event => {
+        port.postMessage({
+            type: START_TRACKING 
         });
     });
     
-    Array.from(endContestButtons).forEach(button => {
-        button.addEventListener("click", event => {
-            chrome.runtime.sendMessage(
-                { type: STOP_TRACKING },
-                response => {}
-            )
-        });
+    endContestButtons.addEventListener("click", event => {
+        port.postMessage({
+            type: STOP_TRACKING
+        })
     });
 }

@@ -4,25 +4,32 @@ const storeCompletedTabs = (tabId, info, tab) => {
     if (tab.status === "complete") {
         console.log(tab);
     }
-}
+};
 
 const onStartRecord = () => {
     chrome.tabs.onCreated.addListener(console.log);
     chrome.tabs.onUpdated.addListener(storeCompletedTabs);
-}
+};
 
 const onStopRecord = () => {
     chrome.tabs.onCreated.removeListener(console.log);
     chrome.tabs.onUpdated.removeListener(storeCompletedTabs);
-}
+};
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === START_TRACKING) {
-        alert(request.type);
-        onStartRecord();
+const handleMessage = (message) => {
+    alert(message.type);
+    switch (message.type) {
+        case START_TRACKING:
+            onStartRecord();
+            break;
+        case STOP_TRACKING:
+            onStopRecord();
+            break;
     }
-    if (request.type === STOP_TRACKING) {
-        alert(request.type);
-        onStopRecord();
+};
+
+chrome.runtime.onConnect.addListener(port => {
+    if (port.name === 'lisbeth') {
+        port.onMessage.addListener(handleMessage);
     }
 });
