@@ -1,3 +1,5 @@
+import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
+
 const storeCompletedTabs = (tabId, info, tab) => {
     if (tab.status === "complete") {
         console.log(tab);
@@ -15,12 +17,12 @@ const onStopRecord = () => {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "start") {
-        alert(request.action);
+    if (request.type === START_TRACKING) {
+        alert(request.type);
         onStartRecord();
     }
-    if (request.action === "stop") {
-        alert(request.action);
+    if (request.type === STOP_TRACKING) {
+        alert(request.type);
         onStopRecord();
     }
 });

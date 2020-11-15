@@ -1,3 +1,5 @@
+import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
+
 const location = window.location;
 
 const startContestButtons = document.getElementsByClassName("button_theme_action");
@@ -7,7 +9,7 @@ if (location.origin === "https://contest.yandex.ru") {
     Array.from(startContestButtons).forEach(button => {
         button.addEventListener("click", event => {
             chrome.runtime.sendMessage(
-                { action: "start" },
+                { type: START_TRACKING },
                 response => {}
             )
         });
@@ -16,10 +18,9 @@ if (location.origin === "https://contest.yandex.ru") {
     Array.from(endContestButtons).forEach(button => {
         button.addEventListener("click", event => {
             chrome.runtime.sendMessage(
-                { action: "stop" },
+                { type: STOP_TRACKING },
                 response => {}
             )
         });
     });
 }
-
