@@ -6,6 +6,10 @@ const storeCompletedTabs = (tabId, info, tab) => {
     }
 };
 
+const storeEventMessage = (message) => {
+    console.log(message);
+};
+
 const onStartRecord = () => {
     chrome.tabs.onCreated.addListener(console.log);
     chrome.tabs.onUpdated.addListener(storeCompletedTabs);
@@ -17,13 +21,15 @@ const onStopRecord = () => {
 };
 
 const handleMessage = (message) => {
-    alert(message.type);
     switch (message.type) {
         case START_TRACKING:
             onStartRecord();
             break;
         case STOP_TRACKING:
             onStopRecord();
+            break;
+        case TRACKING_EVENT:
+            storeEventMessage(message);
             break;
     }
 };
