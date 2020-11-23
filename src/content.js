@@ -1,4 +1,6 @@
-import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
+import { START_TRACKING, STOP_TRACKING, MOUSE_ENTER_EVENT, MOUSE_LEAVE_EVENT } from './actionTypes';
+
+const LISBETH_STATE = 'lisbeth-state';
 
 const sendTrackingMessage = (type, event) => {
     port.postMessage({
@@ -8,35 +10,36 @@ const sendTrackingMessage = (type, event) => {
 };
 
 const initContentListeners = () => {
-    let mainPage = document.getElementsByClassName('page__main')[0];
+    let mainPage = document.getElementsByClassName('b-page__body')[0];
 
     mainPage.addEventListener('mouseleave', (event) => {
-        sendTrackingMessage('MouseLeave', event);
+        sendTrackingMessage(MOUSE_LEAVE_EVENT, event);
     });
     mainPage.addEventListener('mouseenter', (event) => {
-        sendTrackingMessage('MouseEnter', event);
+        sendTrackingMessage(MOUSE_ENTER_EVENT, event);
     });
 };
 
 const disableContentListeners = () => {
-    let mainPage = document.getElementsByClassName('page__main')[0];
+    let mainPage = document.getElementsByClassName('b-page__body')[0];
 
     mainPage.removeEventListener('mouseleave', (event) => {
-        sendTrackingMessage('MouseLeave', event);
+        sendTrackingMessage(MOUSE_LEAVE_EVENT, event);
     });
     mainPage.removeEventListener('mouseenter', (event) => {
-        sendTrackingMessage('MouseEnter', event);
+        sendTrackingMessage(MOUSE_ENTER_EVENT, event);
     });
 };
 
 const checkAppState = () => {
-    let lisbethState = localStorage.getItem('lisbeth-state');
+    let lisbethState = localStorage.getItem(LISBETH_STATE);
     if (lisbethState === START_TRACKING) {
         initContentListeners();
     } else {
         disableContentListeners();
     }
 };
+
 checkAppState();
 
 let port = chrome.runtime.connect({ name: 'lisbeth' });
@@ -47,12 +50,12 @@ startContestButtons.addEventListener('click', event => {
     port.postMessage({
         type: START_TRACKING 
     });
-    localStorage.setItem('lisbeth-state', START_TRACKING);
+    localStorage.setItem(LISBETH_STATE, START_TRACKING);
 });
 
 endContestButtons.addEventListener('click', event => {
     port.postMessage({
         type: STOP_TRACKING
     });
-    localStorage.setItem('lisbeth-state', STOP_TRACKING);
+    localStorage.setItem(LISBETH_STATE, STOP_TRACKING);
 });

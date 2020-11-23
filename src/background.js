@@ -1,23 +1,39 @@
-import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
-
-const storeCompletedTabs = (tabId, info, tab) => {
-    if (tab.status === "complete") {
-        console.log(tab);
-    }
-};
+import { START_TRACKING, STOP_TRACKING, TAB_EVENT } from './actionTypes';
 
 const storeEventMessage = (message) => {
     console.log(message);
 };
 
+const onCreatedTab = (tab) => {
+    storeEventMessage({
+        type: TAB_EVENT,
+        url: tab.url,
+        title: tab.title,
+        active: tab.active,
+        incognito: tab.incognito,
+    })
+};
+
+const onUpdatedTab = (tabId, info, tab) => {
+    if (tab.status === 'complete') {
+        storeEventMessage({
+            type: TAB_EVENT,
+            url: tab.url,
+            title: tab.title,
+            active: tab.active,
+            incognito: tab.incognito,
+        });
+    }
+};
+
 const onStartRecord = () => {
-    chrome.tabs.onCreated.addListener(console.log);
-    chrome.tabs.onUpdated.addListener(storeCompletedTabs);
+    chrome.tabs.onCreated.addListener(onCreatedTab);
+    chrome.tabs.onUpdated.addListener(onUpdatedTab);
 };
 
 const onStopRecord = () => {
-    chrome.tabs.onCreated.removeListener(console.log);
-    chrome.tabs.onUpdated.removeListener(storeCompletedTabs);
+    chrome.tabs.onCreated.removeListener(onCreatedTab);
+    chrome.tabs.onUpdated.removeListener(onUpdatedTab);
 };
 
 const handleMessage = (message) => {
