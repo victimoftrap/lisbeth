@@ -1,4 +1,5 @@
-import { START_TRACKING, STOP_TRACKING, MOUSE_ENTER_EVENT, MOUSE_LEAVE_EVENT } from './actionTypes';
+import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
+import { USER_EVENTS } from './userEventTypes';
 
 const LISBETH_STATE = 'lisbeth-state';
 
@@ -13,10 +14,10 @@ const initContentListeners = () => {
     let mainPage = document.getElementsByClassName('b-page__body')[0];
 
     mainPage.addEventListener('mouseleave', (event) => {
-        sendTrackingMessage(MOUSE_LEAVE_EVENT, event);
+        sendTrackingMessage(USER_EVENTS.MOUSE_LEAVE_EVENT, event);
     });
     mainPage.addEventListener('mouseenter', (event) => {
-        sendTrackingMessage(MOUSE_ENTER_EVENT, event);
+        sendTrackingMessage(USER_EVENTS.MOUSE_ENTER_EVENT, event);
     });
 };
 
@@ -24,10 +25,10 @@ const disableContentListeners = () => {
     let mainPage = document.getElementsByClassName('b-page__body')[0];
 
     mainPage.removeEventListener('mouseleave', (event) => {
-        sendTrackingMessage(MOUSE_LEAVE_EVENT, event);
+        sendTrackingMessage(USER_EVENTS.MOUSE_LEAVE_EVENT, event);
     });
     mainPage.removeEventListener('mouseenter', (event) => {
-        sendTrackingMessage(MOUSE_ENTER_EVENT, event);
+        sendTrackingMessage(USER_EVENTS.MOUSE_ENTER_EVENT, event);
     });
 };
 

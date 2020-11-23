@@ -1,7 +1,0 @@
-export const START_TRACKING = 'START_TRACKING';
-export const STOP_TRACKING = 'STOP_TRACKING';
-export const TRACKING_EVENT = 'TRACKING_EVENT';
-
-export const TAB_EVENT = 'TAB_EVENT';
-export const MOUSE_LEAVE_EVENT = 'MOUSE_LEAVE_EVENT';
-export const MOUSE_ENTER_EVENT = 'MOUSE_ENTER_EVENT';

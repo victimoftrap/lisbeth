@@ -1,4 +1,5 @@
-import { START_TRACKING, STOP_TRACKING, TAB_EVENT } from './actionTypes';
+import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
+import { USER_EVENTS } from './userEventTypes';
 
 const storeEventMessage = (message) => {
     console.log(message);
@@ -6,7 +7,7 @@ const storeEventMessage = (message) => {
 
 const onCreatedTab = (tab) => {
     storeEventMessage({
-        type: TAB_EVENT,
+        type: USER_EVENTS.TAB_EVENT,
         url: tab.url,
         title: tab.title,
         active: tab.active,
@@ -17,7 +18,7 @@ const onCreatedTab = (tab) => {
 const onUpdatedTab = (tabId, info, tab) => {
     if (tab.status === 'complete') {
         storeEventMessage({
-            type: TAB_EVENT,
+            type: USER_EVENTS.TAB_EVENT,
             url: tab.url,
             title: tab.title,
             active: tab.active,
