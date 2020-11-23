@@ -1,8 +1,8 @@
 import { START_TRACKING, STOP_TRACKING, TRACKING_EVENT } from './actionTypes';
 
-const sendTrackingEvent = (event) => {
+const sendTrackingMessage = (type, event) => {
     port.postMessage({
-        type: TRACKING_EVENT,
+        type: type,
         event: event
     });
 };
@@ -10,19 +10,23 @@ const sendTrackingEvent = (event) => {
 const initContentListeners = () => {
     let mainPage = document.getElementsByClassName('page__main')[0];
 
-    mainPage.addEventListener('mouseleave', sendTrackingEvent);
-    mainPage.addEventListener('mouseenter', sendTrackingEvent);
-
-    console.log(mainPage);
+    mainPage.addEventListener('mouseleave', (event) => {
+        sendTrackingMessage('MouseLeave', event);
+    });
+    mainPage.addEventListener('mouseenter', (event) => {
+        sendTrackingMessage('MouseEnter', event);
+    });
 };
 
 const disableContentListeners = () => {
     let mainPage = document.getElementsByClassName('page__main')[0];
 
-    mainPage.removeEventListener('mouseleave', sendTrackingEvent);
-    mainPage.removeEventListener('mouseenter', sendTrackingEvent);
-
-    console.log(mainPage);
+    mainPage.removeEventListener('mouseleave', (event) => {
+        sendTrackingMessage('MouseLeave', event);
+    });
+    mainPage.removeEventListener('mouseenter', (event) => {
+        sendTrackingMessage('MouseEnter', event);
+    });
 };
 
 const checkAppState = () => {

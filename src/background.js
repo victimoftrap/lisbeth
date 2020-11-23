@@ -28,7 +28,7 @@ const handleMessage = (message) => {
         case STOP_TRACKING:
             onStopRecord();
             break;
-        case TRACKING_EVENT:
+        default:
             storeEventMessage(message);
             break;
     }
