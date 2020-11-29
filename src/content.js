@@ -12,18 +12,32 @@ const sendTrackingMessage = (type, event) => {
 
 const initContentListeners = () => {
     let mainPage = document.getElementsByClassName('b-page__body')[0];
-
     mainPage.addEventListener('mouseleave', (event) => {
         sendTrackingMessage(USER_EVENTS.MOUSE_LEAVE_EVENT, event);
     });
     mainPage.addEventListener('mouseenter', (event) => {
         sendTrackingMessage(USER_EVENTS.MOUSE_ENTER_EVENT, event);
     });
+
+    const problemsTabsUl = document.getElementsByClassName('tabs-menu_role_problems')[0];
+    const liTabsList = problemsTabsUl.getElementsByTagName('li');
+    for (const problemTab of liTabsList) {
+        problemTab.addEventListener('click', (event) => {
+            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, event);
+        });
+    }
+
+    const problemsNavBar = document.getElementsByClassName('problem__problems-nav')[0];
+    const navBarLinksList = problemsNavBar.getElementsByTagName('a');
+    for (const problemLink of navBarLinksList) {
+        problemLink.addEventListener('click', (event) => {
+            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, event);
+        });
+    }
 };
 
 const disableContentListeners = () => {
     let mainPage = document.getElementsByClassName('b-page__body')[0];
-
     mainPage.removeEventListener('mouseleave', (event) => {
         sendTrackingMessage(USER_EVENTS.MOUSE_LEAVE_EVENT, event);
     });
