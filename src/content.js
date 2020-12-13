@@ -34,6 +34,14 @@ const initContentListeners = () => {
             sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, event);
         });
     }
+
+    const sentProblemButton = document.getElementsByClassName('button_role_submit')[0];
+    sentProblemButton.addEventListener('click', (event) => {
+        const problemTitle = document.getElementsByClassName('title')[0];
+        sendTrackingMessage(USER_EVENTS.PROBLEM_SENT_EVENT, {
+            title: problemTitle.innerText,
+        });
+    });
 };
 
 const disableContentListeners = () => {
