@@ -23,7 +23,11 @@ const initContentListeners = () => {
     const liTabsList = problemsTabsUl.getElementsByTagName('li');
     for (const problemTab of liTabsList) {
         problemTab.addEventListener('click', (event) => {
-            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, event);
+            const problemTitle = document.getElementsByClassName('title')[0];
+            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, {
+                prevProblemTitle: problemTitle.innerText,
+                prevProblemUrl: window.location.pathname,
+            });
         });
     }
 
@@ -31,7 +35,11 @@ const initContentListeners = () => {
     const navBarLinksList = problemsNavBar.getElementsByTagName('a');
     for (const problemLink of navBarLinksList) {
         problemLink.addEventListener('click', (event) => {
-            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, event);
+            const problemTitle = document.getElementsByClassName('title')[0];
+            sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, {
+                prevProblemTitle: problemTitle.innerText,
+                prevProblemUrl: window.location.pathname,
+            });
         });
     }
 
