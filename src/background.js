@@ -20,13 +20,19 @@ const sendMessageToServer = (message) => {
     .then(jsonResponse => console.log(JSON.stringify(jsonResponse)))
 };
 
-const onCreatedTab = (tab) => {
-    const eventRequest = {
-        type: USER_EVENTS.TAB_EVENT,
+const tabMessageBuilder = (tab) => {
+    return {
         url: tab.url,
         title: tab.title,
         active: tab.active,
         incognito: tab.incognito,
+    };
+};
+
+const onCreatedTab = (tab) => {
+    const eventRequest = {
+        type: USER_EVENTS.TAB_EVENT,
+        event: tabMessageBuilder(tab),
     };
     storeEventMessage(eventRequest);
     sendMessageToServer(eventRequest);
@@ -36,10 +42,7 @@ const onUpdatedTab = (tabId, info, tab) => {
     if (tab.status === 'complete') {
         const eventRequest = {
             type: USER_EVENTS.TAB_EVENT,
-            url: tab.url,
-            title: tab.title,
-            active: tab.active,
-            incognito: tab.incognito,
+            event: tabMessageBuilder(tab),
         };
         storeEventMessage(eventRequest);
         sendMessageToServer(eventRequest);
