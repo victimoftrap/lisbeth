@@ -1,10 +1,16 @@
 import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
 import { USER_EVENTS } from './userEventTypes';
+import getCookie from './cookie';
 
 const LISBETH_STATE = 'lisbeth-state';
 
+const YANDEX_CONTEST_ID = parseInt(window.location.pathname.match(new RegExp('(contest\/)([0-9]+)'))[2]);
+const YANDEX_USER_ID = parseInt(getCookie('yandexuid'));
+
 const sendTrackingMessage = (type, event) => {
     port.postMessage({
+        contestId: YANDEX_CONTEST_ID,
+        userId: YANDEX_USER_ID,
         type: type,
         event: event
     });
@@ -79,7 +85,11 @@ const endContestButtons = document.getElementsByClassName('button_role_end')[0];
 
 startContestButtons.addEventListener('click', event => {
     port.postMessage({
-        type: START_TRACKING 
+        type: START_TRACKING,
+        init: {
+            contestId: YANDEX_CONTEST_ID,
+            userId: YANDEX_USER_ID,
+        } 
     });
     localStorage.setItem(LISBETH_STATE, START_TRACKING);
 });

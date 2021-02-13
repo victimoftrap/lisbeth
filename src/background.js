@@ -31,6 +31,8 @@ const tabMessageBuilder = (tab) => {
 
 const onCreatedTab = (tab) => {
     const eventRequest = {
+        contestId: YANDEX_CONTEST_ID,
+        userId: YANDEX_USER_ID,
         type: USER_EVENTS.TAB_EVENT,
         event: tabMessageBuilder(tab),
     };
@@ -41,6 +43,8 @@ const onCreatedTab = (tab) => {
 const onUpdatedTab = (tabId, info, tab) => {
     if (tab.status === 'complete') {
         const eventRequest = {
+            contestId: YANDEX_CONTEST_ID,
+            userId: YANDEX_USER_ID,
             type: USER_EVENTS.TAB_EVENT,
             event: tabMessageBuilder(tab),
         };
@@ -49,9 +53,15 @@ const onUpdatedTab = (tabId, info, tab) => {
     }
 };
 
-const onStartRecord = () => {
+let YANDEX_CONTEST_ID = '';
+let YANDEX_USER_ID = '';
+
+const onStartRecord = (initData) => {
     chrome.tabs.onCreated.addListener(onCreatedTab);
     chrome.tabs.onUpdated.addListener(onUpdatedTab);
+
+    YANDEX_CONTEST_ID = initData.contestId;
+    YANDEX_USER_ID = initData.userId;
 };
 
 const onStopRecord = () => {
@@ -62,7 +72,7 @@ const onStopRecord = () => {
 const handleMessage = (message) => {
     switch (message.type) {
         case START_TRACKING:
-            onStartRecord();
+            onStartRecord(message.init);
             break;
         case STOP_TRACKING:
             onStopRecord();
