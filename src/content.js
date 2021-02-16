@@ -1,6 +1,8 @@
 import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
 import { USER_EVENTS } from './userEventTypes';
+
 import getCookie from './cookie';
+import { currentDatetime } from './utils'
 
 const LISBETH_STATE = 'lisbeth-state';
 
@@ -11,6 +13,7 @@ const sendTrackingMessage = (type, event) => {
     port.postMessage({
         contestId: YANDEX_CONTEST_ID,
         userId: YANDEX_USER_ID,
+        createdAt: currentDatetime(),
         type: type,
         event: event
     });

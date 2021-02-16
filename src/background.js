@@ -2,11 +2,13 @@ import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
 import { USER_EVENTS } from './userEventTypes';
 import { EXTENSION_API_URL } from './urls';
 
-const storeEventMessage = (message) => {
+import { currentDatetime } from './utils'
+
+const logEventMessage = (message) => {
     console.log(message);
 };
 
-const sendMessageToServer = (message) => {
+const sendEventMessageToServer = (message) => {
     const request = {
         method: 'POST',
         headers: {
@@ -33,11 +35,12 @@ const onCreatedTab = (tab) => {
     const eventRequest = {
         contestId: YANDEX_CONTEST_ID,
         userId: YANDEX_USER_ID,
+        createdAt: currentDatetime(),
         type: USER_EVENTS.TAB_EVENT,
         event: tabMessageBuilder(tab),
     };
-    storeEventMessage(eventRequest);
-    sendMessageToServer(eventRequest);
+    logEventMessage(eventRequest);
+    sendEventMessageToServer(eventRequest);
 };
 
 const onUpdatedTab = (tabId, info, tab) => {
@@ -45,11 +48,12 @@ const onUpdatedTab = (tabId, info, tab) => {
         const eventRequest = {
             contestId: YANDEX_CONTEST_ID,
             userId: YANDEX_USER_ID,
+            createdAt: currentDatetime(),
             type: USER_EVENTS.TAB_EVENT,
             event: tabMessageBuilder(tab),
         };
-        storeEventMessage(eventRequest);
-        sendMessageToServer(eventRequest);
+        logEventMessage(eventRequest);
+        sendEventMessageToServer(eventRequest);
     }
 };
 
@@ -78,8 +82,8 @@ const handleMessage = (message) => {
             onStopRecord();
             break;
         default:
-            storeEventMessage(message);
-            sendMessageToServer(message);
+            logEventMessage(message);
+            sendEventMessageToServer(message);
             break;
     }
 };
