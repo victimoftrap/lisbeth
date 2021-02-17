@@ -16,19 +16,11 @@ const sendEventMessageToServer = (message) => {
         },
         body: JSON.stringify(message),
     };
-
     fetch(EXTENSION_API_URL, request)
-    .then(response => response.json())
-    .then(jsonResponse => console.log(JSON.stringify(jsonResponse)))
 };
 
 const tabMessageBuilder = (tab) => {
-    return {
-        url: tab.url,
-        title: tab.title,
-        active: tab.active,
-        incognito: tab.incognito,
-    };
+    return ;
 };
 
 const onCreatedTab = (tab) => {
@@ -37,7 +29,12 @@ const onCreatedTab = (tab) => {
         userId: YANDEX_USER_ID,
         createdAt: currentDatetime(),
         type: USER_EVENTS.TAB_EVENT,
-        event: tabMessageBuilder(tab),
+        event: {
+            url: tab.url,
+            title: tab.title,
+            active: tab.active,
+            incognito: tab.incognito,
+        }
     };
     logEventMessage(eventRequest);
     sendEventMessageToServer(eventRequest);
@@ -45,15 +42,7 @@ const onCreatedTab = (tab) => {
 
 const onUpdatedTab = (tabId, info, tab) => {
     if (tab.status === 'complete') {
-        const eventRequest = {
-            contestId: YANDEX_CONTEST_ID,
-            userId: YANDEX_USER_ID,
-            createdAt: currentDatetime(),
-            type: USER_EVENTS.TAB_EVENT,
-            event: tabMessageBuilder(tab),
-        };
-        logEventMessage(eventRequest);
-        sendEventMessageToServer(eventRequest);
+        onCreatedTab(tab);
     }
 };
 

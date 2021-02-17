@@ -86,16 +86,19 @@ let port = chrome.runtime.connect({ name: 'lisbeth' });
 const startContestButtons = document.getElementsByClassName('button_theme_action')[0];
 const endContestButtons = document.getElementsByClassName('button_role_end')[0];
 
-startContestButtons.addEventListener('click', event => {
-    port.postMessage({
-        type: START_TRACKING,
-        init: {
-            contestId: YANDEX_CONTEST_ID,
-            userId: YANDEX_USER_ID,
-        } 
+// button that submits new solution also has 'button_theme_action' class
+if (startContestButtons !== undefined && !startContestButtons.classList.contains('button_role_submit')) {
+    startContestButtons.addEventListener('click', event => {
+        port.postMessage({
+            type: START_TRACKING,
+            init: {
+                contestId: YANDEX_CONTEST_ID,
+                userId: YANDEX_USER_ID,
+            } 
+        });
+        localStorage.setItem(LISBETH_STATE, START_TRACKING);
     });
-    localStorage.setItem(LISBETH_STATE, START_TRACKING);
-});
+}
 
 endContestButtons.addEventListener('click', event => {
     port.postMessage({
