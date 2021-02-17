@@ -19,10 +19,6 @@ const sendEventMessageToServer = (message) => {
     fetch(EXTENSION_API_URL, request)
 };
 
-const tabMessageBuilder = (tab) => {
-    return ;
-};
-
 const onCreatedTab = (tab) => {
     const eventRequest = {
         contestId: YANDEX_CONTEST_ID,

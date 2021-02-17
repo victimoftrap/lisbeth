@@ -7,7 +7,9 @@ import { currentDatetime } from './utils'
 const LISBETH_STATE = 'lisbeth-state';
 
 const YANDEX_CONTEST_ID = parseInt(window.location.pathname.match(new RegExp('(contest\/)([0-9]+)'))[2]);
-const YANDEX_USER_ID = parseInt(getCookie('yandexuid'));
+// This is string value of 'yandexuid' because its not fits in JS Number type
+// Coverted as BigInt, it have troubles with JSON, so it would be just string
+const YANDEX_USER_ID = getCookie('yandexuid');
 
 const sendTrackingMessage = (type, event) => {
     port.postMessage({
