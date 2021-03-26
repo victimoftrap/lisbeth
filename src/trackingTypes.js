@@ -1,2 +1,0 @@
-export const START_TRACKING = 'START_TRACKING';
-export const STOP_TRACKING = 'STOP_TRACKING';

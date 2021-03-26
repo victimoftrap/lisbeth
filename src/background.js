@@ -1,6 +1,6 @@
-import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
-import { USER_EVENTS } from './userEventTypes';
-import { EXTENSION_API_URL } from './urls';
+import { APP_STATES } from './constants/appStates';
+import { USER_EVENTS } from './constants/userEventTypes';
+import { SAVE_EVENT_API_URL } from './urls';
 
 import { currentDatetime } from './utils'
 
@@ -16,7 +16,7 @@ const sendEventMessageToServer = (message) => {
         },
         body: JSON.stringify(message),
     };
-    fetch(EXTENSION_API_URL, request)
+    fetch(SAVE_EVENT_API_URL, request)
 };
 
 const onCreatedTab = (tab) => {
@@ -60,10 +60,10 @@ const onStopRecord = () => {
 
 const handleMessage = (message) => {
     switch (message.type) {
-        case START_TRACKING:
+        case APP_STATES.START_TRACKING:
             onStartRecord(message.init);
             break;
-        case STOP_TRACKING:
+        case APP_STATES.STOP_TRACKING:
             onStopRecord();
             break;
         default:

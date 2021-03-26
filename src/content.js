@@ -1,9 +1,9 @@
-import { START_TRACKING, STOP_TRACKING } from './trackingTypes';
-import { USER_EVENTS } from './userEventTypes';
-import { GRAB_ON_RELOAD, NO_GRAB } from './codeGrabberConstants';
+import { APP_STATES } from './constants/appStates';
+import { USER_EVENTS } from './constants/userEventTypes';
+import { GRAB_ON_RELOAD, NO_GRAB } from './constants/codeGrabberConstants';
 
-import getCookie from './cookie';
-import { currentDatetime } from './utils'
+// import getCookie from './cookie';
+import { currentDatetime, getCookie } from './utils'
 
 const LISBETH_STATE = 'lisbeth-state';
 const LISBETH_GRAB = 'lisbeth-grab';
@@ -11,7 +11,7 @@ const LISBETH_GRAB = 'lisbeth-grab';
 // getting contest ID from browser's pathname
 const YANDEX_CONTEST_ID = parseInt(window.location.pathname.match(new RegExp('(contest\/)([0-9]+)'))[2]);
 
-// This is string value of 'yandexuid' because its not fits in JS Number type
+// This is string value of 'yandexuid' because its not fits in JS Number type 
 // Coverted as BigInt, it have troubles with JSON, so it would be just string
 const YANDEX_USER_ID = getCookie('yandexuid');
 
@@ -121,10 +121,15 @@ const disableContentListeners = () => {
 
 const checkAppState = () => {
     let lisbethState = localStorage.getItem(LISBETH_STATE);
-    if (lisbethState === START_TRACKING) {
+    if (lisbethState === null) {
+        localStorage.setItem(LISBETH_STATE, APP_STATES.IDLE);
+    }
+    if (lisbethState === APP_STATES.START_TRACKING) {
         initContentListeners();
-    } else {
+    }
+    if (lisbethState === APP_STATES.STOP_TRACKING) {
         disableContentListeners();
+        localStorage.setItem(LISBETH_STATE, APP_STATES.IDLE);
     }
 };
 
@@ -137,19 +142,19 @@ const endContestButtons = document.getElementsByClassName('button_role_end')[0];
 if (startContestButtons !== undefined && !startContestButtons.classList.contains('button_role_submit')) {
     startContestButtons.addEventListener('click', event => {
         port.postMessage({
-            type: START_TRACKING,
+            type: APP_STATES.START_TRACKING,
             init: {
                 contestId: YANDEX_CONTEST_ID,
                 userId: YANDEX_USER_ID,
-            } 
+            },
         });
-        localStorage.setItem(LISBETH_STATE, START_TRACKING);
+        localStorage.setItem(LISBETH_STATE, APP_STATES.START_TRACKING);
     });
 }
 
 endContestButtons.addEventListener('click', event => {
     port.postMessage({
-        type: STOP_TRACKING
+        type: APP_STATES.STOP_TRACKING,
     });
-    localStorage.setItem(LISBETH_STATE, STOP_TRACKING);
+    localStorage.setItem(LISBETH_STATE, APP_STATES.STOP_TRACKING);
 });
