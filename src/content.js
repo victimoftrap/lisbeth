@@ -1,6 +1,7 @@
 import { APP_STATES } from './constants/appStates';
 import { USER_EVENTS } from './constants/userEventTypes';
 import { LISBETH_GRAB, GRAB_ON_RELOAD, NO_GRAB } from './constants/codeGrabberConstants';
+import { PROBLEM_TYPES } from './constants/problemTypes';
 
 import { currentDatetime, getCookie } from './utils'
 
@@ -79,6 +80,8 @@ const injectDropDownProblemSwithcerEvents = () => {
         const problemsList = problemsPopup.querySelector('div').querySelectorAll('div');
         const problemsObservers = [];
         for (let i = 0; i < problemsList.length; i++) {
+            // create mutation observer that will watch changes in attributes
+            // if task selected in drop-down list, element will get 'select__item_selected_yes' class
             const mutationObserver = new MutationObserver((mutations) => {
                 const problemIndex = i - 1;
 
@@ -112,20 +115,111 @@ const injectDropDownProblemSwithcerEvents = () => {
 };
 
 const injectSendProblemListeners = () => {
-    const isCodingProblem = document.getElementsByClassName('solution_type_compiler-list').length ? true : false;
-
     const sendProblemButton = document.getElementsByClassName('button_role_submit')[0];
     sendProblemButton.addEventListener('click', (event) => {
-        if (isCodingProblem) {
-            localStorage.setItem(LISBETH_GRAB, GRAB_ON_RELOAD);
+        const solutionElementCollection = document.getElementsByClassName('solution');
+        for (let solution of solutionElementCollection) {
+            const problemId = JSON.parse(solution.dataset.bem).solution.problemId;
+            if (problemId === CURRENT_PROBLEM.id) {
+                const elementClassList = solution.classList;
+                if (elementClassList.contains(PROBLEM_TYPES.CODE)) {
+                    // extract will be executed after page reload
+                    localStorage.setItem(LISBETH_GRAB, GRAB_ON_RELOAD);
+                }
+                if (elementClassList.contains(PROBLEM_TYPES.TEXT)) {
+                    extractSolutionText();
+                }
+                if (elementClassList.contains(PROBLEM_TYPES.CHECKBOX)) {
+                    extractSolutionCheckbox();
+                }
+                if (elementClassList.contains(PROBLEM_TYPES.MATCH)) {
+                    extractSolutionMatch();
+                }
+            }
         }
+
         sendTrackingMessage(USER_EVENTS.PROBLEM_SENT_EVENT, {
             title: CURRENT_PROBLEM.title,
         });
     });
 };
 
-const injectSolutionCodeListeners = () => {
+const extractSolutionCheckbox = () => {
+    const checkboxElementList = document.getElementsByClassName('solution_type_checkbox')[0].querySelectorAll('li');
+    const normalCheckboxList = [];
+    checkboxElementList.forEach((checkbox) => {
+        if (!checkbox.classList.contains('solution__field_role_default-value')) {
+            normalCheckboxList.push(checkbox);
+        }
+    });
+
+    const checklist = [];
+    normalCheckboxList.forEach((elem) => {
+        const checkboxSpanWrapper = elem.querySelector('span');
+        const titie = checkboxSpanWrapper.querySelector('label').innerText;
+        const checked = checkboxSpanWrapper.querySelector('span').classList.contains('checkbox__box_checked_yes');
+
+        const checkbox = {
+            title: titie,
+            checked: checked,
+        };
+        checklist.push(checkbox);
+    });
+    const message = {
+        problemTitle: CURRENT_PROBLEM.title,
+        problemUrl: CURRENT_PROBLEM.url,
+        checklist: checklist,
+    };
+    console.log(message);
+    // sendTrackingMessage(USER_EVENTS.SOLUTION_CHECKBOX_SENT_EVENT, message);
+};
+
+const extractSolutionText = () => {
+    const textInputField = document.getElementsByClassName('solution_type_text')[0].getElementsByClassName('input__control')[0];
+    const message = {
+        problemTitle: CURRENT_PROBLEM.title,
+        problemUrl: CURRENT_PROBLEM.url,
+        text: textInputField.value,
+    };
+    console.log(message);
+    // sendTrackingMessage(USER_EVENTS.SOLUTION_TEXT_SENT_EVENT, message);
+};
+
+const extractSolutionMatch = () => {
+    const columnLabelList = document.getElementsByClassName('solution__header')[0].getElementsByClassName('solution__cell_type_label');
+    const matchRowsElements = document.getElementsByClassName('solution__row');
+
+    const matchList = [];
+    for (let row of matchRowsElements) {
+        const rowLabel = row.querySelector('div').innerText;
+        const matchDots = row.getElementsByClassName('radiobox solution__cell');
+
+        for (let i = 0; i < matchDots.length; i++) {
+            const dotLabel = matchDots[i].querySelector('label');
+
+            if (dotLabel.classList.contains('radiobox__radio_checked_yes')) {
+                const columnLabel = columnLabelList[i].innerText;
+                const matchedPair = {
+                    param1: rowLabel,
+                    param2: columnLabel,
+                };
+                console.log(matchedPair);
+                matchList.push(matchedPair);
+            }
+        }
+    }
+
+    console.log(matchList);
+    const message = {
+        problemTitle: CURRENT_PROBLEM.title,
+        problemUrl: CURRENT_PROBLEM.url,
+        match: matchList,
+    };
+    console.log(message);
+    // sendTrackingMessage(USER_EVENTS.SOLUTION_MATCH_SENT_EVENT, message);
+};
+
+const extractSolutionCode = () => {
     const grab = localStorage.getItem(LISBETH_GRAB);
     if (grab === GRAB_ON_RELOAD) {
         localStorage.setItem(LISBETH_GRAB, NO_GRAB);
@@ -151,7 +245,7 @@ const injectSolutionCodeListeners = () => {
             solutionType: solutionType,
             source: sourceCode,
         };
-        // console.log(message);
+        console.log(message);
         sendTrackingMessage(USER_EVENTS.SOLUTION_CODE_SENT_EVENT, message);
     }
 };
@@ -199,6 +293,7 @@ const getProblemInfo = () => {
         }
     }
     CURRENT_PROBLEM.url = window.location.pathname;
+    console.log(CURRENT_PROBLEM);
 };
 
 /**
@@ -228,7 +323,7 @@ const checkAppState = () => {
             injectRightCornerProblemSwitherListeners();
             injectPageBottomProblemSwitcherListeners();
             injectSendProblemListeners();
-            injectSolutionCodeListeners();
+            extractSolutionCode();
         } else if (currentUrl.match(submitsTab) != null) {
             // if user on page https://contest.yandex.ru/contest/ID/submits
             getContestInfo();
@@ -237,7 +332,7 @@ const checkAppState = () => {
             injectMouseListeners();
             injectDropDownProblemSwithcerEvents();
             injectSendProblemListeners();
-            injectSolutionCodeListeners();
+            extractSolutionCode();
         } else {
             // all another pages
             console.log('Patrego');
