@@ -20,6 +20,7 @@ const sendTrackingMessage = (type, event) => {
     port.postMessage({
         contestId: YANDEX_CONTEST_ID,
         userId: YANDEX_USER_ID,
+        userLogin: YANDEX_USER_LOGIN,
         createdAt: currentDatetime(),
         type: type,
         event: event
@@ -43,6 +44,7 @@ const injectRightCornerProblemSwitherListeners = () => {
     for (const problemTab of liTabsList) {
         problemTab.addEventListener('click', (event) => {
             sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, {
+                prevProblemId: CURRENT_PROBLEM.id,
                 prevProblemTitle: CURRENT_PROBLEM.title,
                 prevProblemUrl: CURRENT_PROBLEM.url,
             });
@@ -58,6 +60,7 @@ const injectPageBottomProblemSwitcherListeners = () => {
     for (const problemLink of navBarLinksList) {
         problemLink.addEventListener('click', (event) => {
             sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, {
+                prevProblemId: CURRENT_PROBLEM.id,
                 prevProblemTitle: CURRENT_PROBLEM.title,
                 prevProblemUrl:CURRENT_PROBLEM.url,
             });
@@ -66,16 +69,13 @@ const injectPageBottomProblemSwitcherListeners = () => {
 };
 
 const injectDropDownProblemSwithcerEvents = () => {
-    // problem switcher on 'submits' page
+    // problem switcher on '/submits' page
     // drop-down list with all problems
     const dropDownProblemSwitcher = document.getElementsByClassName('problem__switcher')[0];
     const problemSwitcherSpan = dropDownProblemSwitcher.querySelector('span');
 
     const buttonOnSelect = problemSwitcherSpan.querySelector('button');
     buttonOnSelect.addEventListener('click', (event) => {
-        // const patregoButtonText = this.querySelector('span').innerText;
-        // console.log(patregoButtonText);
-
         const problemsPopup = document.getElementsByClassName('popup_visibility_visible')[0];
         const problemsList = problemsPopup.querySelector('div').querySelectorAll('div');
         const problemsObservers = [];
@@ -90,6 +90,7 @@ const injectDropDownProblemSwithcerEvents = () => {
                         const problemName = mut.target.innerText;
                         if (CURRENT_PROBLEM.title !== problemName) {
                             sendTrackingMessage(USER_EVENTS.PROBLEM_CHANGED_EVENT, {
+                                prevProblemId: CURRENT_PROBLEM.id,
                                 prevProblemTitle: CURRENT_PROBLEM.title,
                                 prevProblemUrl:CURRENT_PROBLEM.url,
                             });
@@ -126,20 +127,23 @@ const injectSendProblemListeners = () => {
                     // extract will be executed after page reload
                     localStorage.setItem(LISBETH_GRAB, GRAB_ON_RELOAD);
                 }
-                if (elementClassList.contains(PROBLEM_TYPES.TEXT)) {
-                    extractSolutionText();
-                }
-                if (elementClassList.contains(PROBLEM_TYPES.CHECKBOX)) {
-                    extractSolutionCheckbox();
-                }
-                if (elementClassList.contains(PROBLEM_TYPES.MATCH)) {
-                    extractSolutionMatch();
-                }
+                // !!! Temporarily disabled, working only w/ user code !!!
+                // if (elementClassList.contains(PROBLEM_TYPES.TEXT)) {
+                //     extractSolutionText();
+                // }
+                // if (elementClassList.contains(PROBLEM_TYPES.CHECKBOX)) {
+                //     extractSolutionCheckbox();
+                // }
+                // if (elementClassList.contains(PROBLEM_TYPES.MATCH)) {
+                //     extractSolutionMatch();
+                // }
             }
         }
 
         sendTrackingMessage(USER_EVENTS.PROBLEM_SENT_EVENT, {
-            title: CURRENT_PROBLEM.title,
+            problemId: CURRENT_PROBLEM.id,
+            problemTitle: CURRENT_PROBLEM.title,
+            problemUrl: CURRENT_PROBLEM.url,
         });
     });
 };
@@ -166,23 +170,23 @@ const extractSolutionCheckbox = () => {
         checklist.push(checkbox);
     });
     const message = {
+        problemId: CURRENT_PROBLEM.id,
         problemTitle: CURRENT_PROBLEM.title,
         problemUrl: CURRENT_PROBLEM.url,
         checklist: checklist,
     };
-    console.log(message);
-    // sendTrackingMessage(USER_EVENTS.SOLUTION_CHECKBOX_SENT_EVENT, message);
+    sendTrackingMessage(USER_EVENTS.SOLUTION_CHECKBOX_SENT_EVENT, message);
 };
 
 const extractSolutionText = () => {
     const textInputField = document.getElementsByClassName('solution_type_text')[0].getElementsByClassName('input__control')[0];
     const message = {
+        problemId: CURRENT_PROBLEM.id,
         problemTitle: CURRENT_PROBLEM.title,
         problemUrl: CURRENT_PROBLEM.url,
         text: textInputField.value,
     };
-    console.log(message);
-    // sendTrackingMessage(USER_EVENTS.SOLUTION_TEXT_SENT_EVENT, message);
+    sendTrackingMessage(USER_EVENTS.SOLUTION_TEXT_SENT_EVENT, message);
 };
 
 const extractSolutionMatch = () => {
@@ -211,12 +215,12 @@ const extractSolutionMatch = () => {
 
     console.log(matchList);
     const message = {
+        problemId: CURRENT_PROBLEM.id,
         problemTitle: CURRENT_PROBLEM.title,
         problemUrl: CURRENT_PROBLEM.url,
         match: matchList,
     };
-    console.log(message);
-    // sendTrackingMessage(USER_EVENTS.SOLUTION_MATCH_SENT_EVENT, message);
+    sendTrackingMessage(USER_EVENTS.SOLUTION_MATCH_SENT_EVENT, message);
 };
 
 const extractSolutionCode = () => {
@@ -239,19 +243,19 @@ const extractSolutionCode = () => {
         const sourceCode = document.getElementsByClassName('input__control')[0].innerText;
     
         const message = {
+            problemId: CURRENT_PROBLEM.id,
             problemTitle: CURRENT_PROBLEM.title,
             problemUrl: CURRENT_PROBLEM.url,
             compiler: compilerName,
             solutionType: solutionType,
             source: sourceCode,
         };
-        console.log(message);
         sendTrackingMessage(USER_EVENTS.SOLUTION_CODE_SENT_EVENT, message);
     }
 };
 
 const disableContentListeners = () => {
-    let mainPage = document.getElementsByClassName('b-page__body')[0];
+    const mainPage = document.getElementsByClassName('b-page__body')[0];
     mainPage.removeEventListener('mouseleave', (event) => {
         sendTrackingMessage(USER_EVENTS.MOUSE_LEAVE_EVENT, event);
     });
@@ -266,6 +270,7 @@ let YANDEX_CONTEST_ID = 0;
 // This is string value of 'yandexuid' because its not fits in JS Number type.
 // Coverted as BigInt, it have troubles with JSON, so it would be just string.
 let YANDEX_USER_ID = '';
+let YANDEX_USER_LOGIN = '';
 
 let CURRENT_PROBLEM = {
     title: '',
@@ -276,6 +281,7 @@ let CURRENT_PROBLEM = {
 const getContestInfo = () => {
     YANDEX_CONTEST_ID = parseInt(window.location.pathname.match(new RegExp('(contest\/)([0-9]+)'))[2]);
     YANDEX_USER_ID = getCookie('yandexuid');
+    YANDEX_USER_LOGIN = getCookie('yandex_login');
 };
 
 const getProblemInfo = () => {
@@ -293,7 +299,6 @@ const getProblemInfo = () => {
         }
     }
     CURRENT_PROBLEM.url = window.location.pathname;
-    console.log(CURRENT_PROBLEM);
 };
 
 /**
@@ -314,7 +319,7 @@ const checkAppState = () => {
         const problemsTab = new RegExp('(\/problems)');
         const submitsTab = new RegExp('(\/submits)');
         
-        // if user on page https://contest.yandex.ru/contest/ID/problems
+        // if user on page https://contest.yandex.ru/contest/{CONTEST_ID}/problems
         if (currentUrl.match(problemsTab) != null) {
             getContestInfo();
             getProblemInfo();
@@ -325,7 +330,7 @@ const checkAppState = () => {
             injectSendProblemListeners();
             extractSolutionCode();
         } else if (currentUrl.match(submitsTab) != null) {
-            // if user on page https://contest.yandex.ru/contest/ID/submits
+            // if user on page https://contest.yandex.ru/contest/{CONTEST_ID}/submits
             getContestInfo();
             getProblemInfo();
 
@@ -358,6 +363,7 @@ if (startContestButtons !== undefined && !startContestButtons.classList.contains
             init: {
                 contestId: YANDEX_CONTEST_ID,
                 userId: YANDEX_USER_ID,
+                userLogin: YANDEX_USER_LOGIN,
             },
         });
         localStorage.setItem(LISBETH_STATE, APP_STATES.START_TRACKING);

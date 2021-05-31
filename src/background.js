@@ -23,6 +23,7 @@ const onCreatedTab = (tab) => {
     const eventRequest = {
         contestId: YANDEX_CONTEST_ID,
         userId: YANDEX_USER_ID,
+        userLogin: YANDEX_USER_LOGIN,
         createdAt: currentDatetime(),
         type: USER_EVENTS.TAB_EVENT,
         event: {
@@ -44,6 +45,7 @@ const onUpdatedTab = (tabId, info, tab) => {
 
 let YANDEX_CONTEST_ID = '';
 let YANDEX_USER_ID = '';
+let YANDEX_USER_LOGIN = '';
 
 const onStartRecord = (initData) => {
     chrome.tabs.onCreated.addListener(onCreatedTab);
@@ -51,6 +53,7 @@ const onStartRecord = (initData) => {
 
     YANDEX_CONTEST_ID = initData.contestId;
     YANDEX_USER_ID = initData.userId;
+    YANDEX_USER_LOGIN = initData.userLogin;
 };
 
 const onStopRecord = () => {
