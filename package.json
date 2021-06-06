@@ -1,12 +1,19 @@
 {
   "name": "lisbeth",
   "version": "0.0.1",
-  "description": "",
+  "description": "Proctoring extension for Yandex.Contest",
   "scripts": {
     "build": "webpack --bail"
   },
-  "author": "Alexander Golovanov",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/victimoftrap/lisbeth.git"
+  },
+  "author": "Alexander Golovanov / victimoftrap",
   "license": "N/A",
+  "bugs": {
+    "url": "https://github.com/victimoftrap/lisbeth/issues"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
